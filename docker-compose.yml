@@ -1,53 +1,45 @@
 version: "3.8"
 
 services:
-  app:
-    build:
-      context: .
-      dockerfile: docker/php/Dockerfile
-    container_name: laravel_app
-    restart: unless-stopped
-    working_dir: /var/www
-    volumes:
-      - ./:/var/www
-    networks:
-      - app-network
-    depends_on:
-      - db
-
-  nodejs:
-    build:
-      context: .
-      dockerfile: docker/node/Dockerfile
-    container_name: nodejs_server
-    restart: unless-stopped
-    working_dir: /usr/src/app
-    volumes:
-      - ./node-server:/usr/src/app
-    ports:
-      - "3000:3000" # node server listen 3000
-    networks:
-      - app-network
-
-  db:
-    image: mariadb:10.7 # atau mysql:8.0
-    container_name: database
-    restart: unless-stopped
+  mysql:
+    image: mysql:8
+    container_name: mysql
+    restart: always
+    environment:
+      MYSQL_DATABASE: laravel_db
+      MYSQL_USER: laravel_user
+      MYSQL_PASSWORD: secret
+      MYSQL_ROOT_PASSWORD: root
     ports:
       - "3306:3306"
-    environment:
-      MYSQL_DATABASE: monitoring
-      MYSQL_USER: usermonitoring
-      MYSQL_PASSWORD: secret123
-      MYSQL_ROOT_PASSWORD: root123
     volumes:
-      - dbdata:/var/lib/mysql
-    networks:
-      - app-network
+      - mysql_data:/var/lib/mysql
 
-networks:
-  app-network:
-    driver: bridge
+  laravel:
+    build: ./backend
+    container_name: laravel
+    volumes:
+      - ./backend:/var/www
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mysql
+    working_dir: /var/www
+    command: php artisan serve --host=0.0.0.0 --port=8000
+
+  react:
+    build: ./frontend
+    container_name: react
+    ports:
+      - "3000:3000"
+
+  node-server:
+    build: ./node-server
+    container_name: node-server
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mysql
 
 volumes:
-  dbdata:
+  mysql_data:
