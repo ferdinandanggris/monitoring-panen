@@ -1,0 +1,66 @@
+version: "3.8"
+
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: .devcontainer/Dockerfile
+    container_name: laravel_app
+    volumes:
+      - ../backend:/var/www/backend
+    ports:
+      - "8000:8000" # Laravel serve
+      - "5173:5173" # Vite dev
+    networks:
+      - app-network
+    depends_on:
+      - db
+
+  nodejs:
+    image: node:18
+    container_name: nodejs_server
+    working_dir: /var/www
+    volumes:
+      - ../node-server:/var/www/node-server
+    ports:
+      - "5000:5000"
+    command: "npm start"
+    networks:
+      - app-network
+
+  react:
+    image: node:18
+    container_name: react_frontend
+    working_dir: /var/www
+    volumes:
+      - ../react-frontend:/var/www/frontend
+    ports:
+      - "3000:3000"
+    command: sh -c "npm install && npm run dev"
+    networks:
+      - app-network
+    depends_on:
+      - app
+
+  db:
+    image: mariadb:10.7
+    container_name: database
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: monitoring
+      MYSQL_USER: usermonitoring
+      MYSQL_PASSWORD: secret123
+      MYSQL_ROOT_PASSWORD: root123
+    ports:
+      - "3306:3306"
+    volumes:
+      - dbdata:/var/lib/mysql
+    networks:
+      - app-network
+
+volumes:
+  dbdata:
+
+networks:
+  app-network:
+    driver: bridge

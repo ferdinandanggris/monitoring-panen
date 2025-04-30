@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Simulasi Grid Tracking Combi - Leaflet</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
+
+    <style>
+      #map {
+        height: 100vh;
+      }
+      #info {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background: white;
+        padding: 10px;
+        z-index: 1000;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="info">Total Area: 0 m²</div>
+    <div id="map"></div>
+
+    <script>
+      // Data semua titik GPS (simulasi combi jalan)
+      const allPoints = [
+        [110.654321, -7.123456],
+        [110.65435, -7.12346],
+        [110.65438, -7.12347],
+        [110.65441, -7.123475],
+        [110.65444, -7.12348],
+        [110.65447, -7.12349],
+        [110.6545, -7.123495],
+        [110.65453, -7.1235],
+        [110.65456, -7.123505],
+        [110.65459, -7.12351],
+      ];
+
+      const gridLengthInMeters = 2;
+      const gridWidthInMeters = 2;
+      let totalArea = 0;
+      let trackedPoints = [];
+      let addedGrids = [];
+
+      const map = L.map("map").setView([-7.123456, 110.654321], 20);
+
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 20,
+      }).addTo(map);
+
+      // Konversi Meter ke Derajat
+      function metersToDegrees(lat, metersLat, metersLng) {
+        const latDegree = metersLat / 111320;
+        const lonDegree =
+          metersLng / (111320 * Math.cos((lat * Math.PI) / 180));
+        return { latDegree, lonDegree };
+      }
+
+      // Fungsi menggambar grid rectangle
+      function drawGrid(lng, lat, lengthInMeters, widthInMeters) {
+        const { latDegree, lonDegree } = metersToDegrees(
+          lat,
+          lengthInMeters,
+          widthInMeters
+        );
+
+        const polygonCoords = [
+          [lng - lonDegree / 2, lat - latDegree / 2],
+          [lng + lonDegree / 2, lat - latDegree / 2],
+          [lng + lonDegree / 2, lat + latDegree / 2],
+          [lng - lonDegree / 2, lat + latDegree / 2],
+          [lng - lonDegree / 2, lat - latDegree / 2],
+        ];
+
+        return turf.polygon([polygonCoords]);
+      }
+
+      // Fungsi update saat combi jalan
+      let currentIndex = 0;
+      function updateTracking() {
+        if (currentIndex < allPoints.length) {
+          const [lng, lat] = allPoints[currentIndex];
+          trackedPoints.push([lng, lat]);
+
+          // Gambar grid di titik baru
+          const grid = drawGrid(
+            lng,
+            lat,
+            gridLengthInMeters,
+            gridWidthInMeters
+          );
+          let intersectionArea = 0;
+
+          // Cek overlap dengan grid yang sudah ada
+          addedGrids.forEach((existingGrid) => {
+            const intersection = turf.intersect(existingGrid, grid);
+            if (intersection) {
+              intersectionArea += turf.area(intersection);
+            }
+          });
+
+          const areaGrid = turf.area(grid);
+          const actualArea = areaGrid - intersectionArea;
+          if (actualArea > 0) {
+            totalArea += actualArea;
+          }
+
+          // Tampilkan grid baru di peta
+          L.geoJSON(grid, {
+            style: {
+              color: "blue",
+              weight: 1,
+              fillOpacity: 0.4,
+            },
+          }).addTo(map);
+
+          addedGrids.push(grid);
+
+          // Update info area
+          document.getElementById(
+            "info"
+          ).innerText = `Total Area: ${totalArea.toFixed(2)} m² (${(
+            totalArea / 10000
+          ).toFixed(4)} hektar)`;
+
+          currentIndex++;
+          setTimeout(updateTracking, 1000); // Ulangi per 1 detik
+        }
+      }
+
+      // Mulai simulasi
+      updateTracking();
+    </script>
+  </body>
+</html>

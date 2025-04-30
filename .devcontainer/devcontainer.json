@@ -1,0 +1,19 @@
+{
+	"name": "Monitoring Panen DevContainer",
+	"dockerComposeFile": "docker-compose.yml",
+	"service": "app",
+	"workspaceFolder": "/var/www",
+	"settings": {
+			"terminal.integrated.defaultProfile.linux": "bash",
+			"php.validate.executablePath": "/usr/local/bin/php"
+	},
+	"extensions": [
+			"bmewburn.vscode-intelephense-client",
+			"onecentlin.laravel-blade",
+			"xdebug.php-debug",
+			"esbenp.prettier-vscode",
+			"dbaeumer.vscode-eslint"
+	],
+	// "postCreateCommand": "composer install && npm install",
+	"remoteUser": "root"
+}
