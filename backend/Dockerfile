@@ -15,9 +15,9 @@ COPY --chown=www-data:www-data . .
 
 RUN composer install
 
-COPY /var/www/.env.example /var/www/.env
+# COPY /var/www/.env.example /var/www/.env
 # Generate application key
-RUN php artisan key:generate
+# RUN php artisan key:generate
 
 # Hanya folder yang butuh permission write
 RUN chown -R www-data:www-data storage bootstrap/cache
