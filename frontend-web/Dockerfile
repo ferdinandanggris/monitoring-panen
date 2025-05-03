@@ -5,6 +5,7 @@ COPY . .
 
 ENV NODE_ENV=development
 RUN npm install
+RUN chmod +x node_modules/.bin/vite
 RUN npm run build
 
 RUN npm install -g serve
