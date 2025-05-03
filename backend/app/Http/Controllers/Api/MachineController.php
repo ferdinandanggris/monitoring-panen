@@ -14,7 +14,10 @@ class MachineController extends Controller
      */
     public function index()
     {
-        $machines = Machine::all();
+        $machines = Machine::with(['current_driver'])->get();
+        if ($machines->isEmpty()) {
+            return ApiResponse::error("Mesin tidak ditemukan", 404);
+        }
         return ApiResponse::success($machines, "Berhasil mengambil data mesin");
     }
 

@@ -22,9 +22,15 @@ export default function SessionTable({ sessions, onRowClick }) {
             <td className="p-2">{i + 1}</td>
             <td className="p-2">{session.driver.name || "-"}</td>
             <td className="p-2">{session.machine.name}</td>
-            <td className="p-2">{session.total_area} m²</td>
-            <td className="p-2">{session.total_distance} m</td>
-            <td className="p-2">Rp {session.total_harga.toLocaleString()}</td>
+            <td className="p-2">
+              {parseFloat(session.total_area).toFixed(2)} m²
+            </td>
+            <td className="p-2">
+              {parseFloat(session.total_distance).toFixed(2)} m
+            </td>
+            <td className="p-2">
+              Rp {parseFloat(session.total_harga).toLocaleString()}
+            </td>
           </tr>
         ))}
       </tbody>

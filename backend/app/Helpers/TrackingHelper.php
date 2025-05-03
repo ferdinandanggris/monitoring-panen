@@ -83,7 +83,7 @@ class TrackingHelper
   /**
    * Haversine formula untuk menghitung jarak antar dua koordinat.
    */
-  private static function haversineDistance(float $lat1, float $lon1, float $lat2, float $lon2): float
+  public static function haversineDistance(float $lat1, float $lon1, float $lat2, float $lon2): float
   {
     $lat1 = deg2rad($lat1);
     $lon1 = deg2rad($lon1);

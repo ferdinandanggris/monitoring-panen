@@ -33,18 +33,20 @@ export default function Dashboard() {
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold text-teal-700 mb-4">
-        📊 Dashboard Panen
-      </h1>
-
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         {/* Stat Cards */}
-        <StatCard title={"Luas Panen Bulan ini"} value={summary.total_area} />
+        <StatCard
+          title={"Luas Panen Bulan ini"}
+          value={parseFloat(summary.total_area || 0).toFixed(2) + " m²"}
+        />
         <StatCard
           title={"Jarak Ditempuh Bulan ini"}
-          value={summary.total_distance}
+          value={parseFloat(summary.total_distance || 0).toFixed(2) + " m"}
         />
-        <StatCard title={"Total Biaya"} value={summary.total_harga} />
+        <StatCard
+          title={"Total Biaya"}
+          value={"Rp " + parseFloat(summary.total_harga || 0).toLocaleString()}
+        />
       </div>
 
       <div className="space-y-4 my-2">

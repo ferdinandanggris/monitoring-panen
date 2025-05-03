@@ -1,9 +1,13 @@
+require("dotenv").config();
 const mqtt = require("mqtt");
 const trackingController = require("./controllers/trackingController");
-
 const fs = require("fs");
 const path = require("path");
 const logFile = path.join(__dirname, "mqtt.log");
+const { startWorker } = require("./workers/sessionAutoEndWorker");
+
+// Start background worker
+startWorker();
 
 // MQTT Setup
 const mqttClient = mqtt.connect("mqtt://broker.hivemq.com");

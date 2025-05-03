@@ -6,8 +6,8 @@ client.on("connect", () => {
 
   const data = {
     machine_id: 1,
-    latitude: -7.865417,
-    longitude: 111.466117,
+    latitude: -7.865471,
+    longitude: 111.466147,
     speed: 8,
   };
 

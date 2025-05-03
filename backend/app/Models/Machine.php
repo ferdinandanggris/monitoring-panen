@@ -21,4 +21,9 @@ class Machine extends Model
     {
         return $this->hasMany(Session::class, 'machine_id');
     }
+
+    public function current_driver()
+    {
+        return $this->belongsTo(Driver::class, 'current_driver_id');
+    }
 }

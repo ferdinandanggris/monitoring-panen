@@ -5,9 +5,16 @@ import {
   Marker,
   Popup,
   useMap,
+  Polygon,
 } from "react-leaflet";
 import { useEffect } from "react";
 import React from "react";
+import {
+  SmallCircleMarker,
+  TinyDefaultMarker,
+  TractorEmojiMarker,
+} from "../constants/mapIcons";
+import { getBoundingBoxPolygon } from "../utils/getBoundingBoxPolygon";
 
 const ChangeView = ({ center }) => {
   const map = useMap();
@@ -46,6 +53,12 @@ export default function TrackingMap({
           Number(d.latitude),
           Number(d.longitude),
         ]);
+        const lnglatPoints = session.details.map((d) => [
+          Number(d.longitude),
+          Number(d.latitude),
+        ]);
+
+        const bboxPolygon = getBoundingBoxPolygon(lnglatPoints);
 
         return (
           <div key={session.id}>
@@ -56,16 +69,29 @@ export default function TrackingMap({
               />
             )}
 
+            {/* GRID MODE = Bounding Box */}
+            {viewMode === "grid" && bboxPolygon.length >= 4 && (
+              <Polygon
+                positions={bboxPolygon}
+                pathOptions={{
+                  color: "teal",
+                  fillOpacity: 0.3,
+                  weight: 2,
+                }}
+              />
+            )}
+
             {/* Marker titik awal */}
             {points.length > 0 && (
-              <Marker position={points[0]}>
+              <Marker position={points[0]} icon={TractorEmojiMarker}>
                 <Popup>
                   🚜 Mesin: {session.machine.name}
                   <br />
                   👨‍🌾 Sopir: {session.driver.name}
                   <br />
-                  📏 Jarak: {session.total_distance} m<br />
-                  📐 Luas: {session.total_area} m²
+                  📏 Jarak: {parseFloat(session.total_distance).toFixed(2)} m
+                  <br />
+                  📐 Luas: {parseFloat(session.total_area).toFixed(2)} m²
                 </Popup>
               </Marker>
             )}

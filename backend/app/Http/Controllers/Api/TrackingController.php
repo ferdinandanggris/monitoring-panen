@@ -110,7 +110,7 @@ class TrackingController extends Controller
                 $resultUpdate = $session;
             }
             $resultUpdate->details = TrackingHelper::cleanTrackingData($session->details->toArray());
-            $resultUpdate->total_harga = $resultUpdate->total_area * $settings->value; // 1m² = 1000 IDR
+            $resultUpdate->total_harga = $resultUpdate->total_distance * $settings->value; // 1m² = 1000 IDR
             return $resultUpdate;
         });
 
@@ -120,7 +120,7 @@ class TrackingController extends Controller
             'sessions' => $summary,
             'total_area' => $summary->sum('total_area'),
             'total_distance' => $summary->sum('total_distance'),
-            'total_harga' => $summary->sum('total_area') * $settings->value, // 1m² = 1000 IDR
+            'total_harga' => $summary->sum('total_distance') * $settings->value, // 1m² = 1000 IDR
         ];
 
         return ApiResponse::success($result, "Berhasil mengambil data summary");

@@ -42,7 +42,23 @@ class UpdateSessionTrackingService
 
     $cleanedData = TrackingHelper::cleanTrackingData($rawData);
     $totalDistance = TrackingHelper::calculateTotalDistance($cleanedData);
-    $totalArea = count($cleanedData) * 4; // 2m x 2m kotak = 4m²
+    // $totalArea = count($cleanedData) * 4; // 2m x 2m kotak = 4m²
+
+    // hitung total area berdasarkan 4 titik terjauh
+    $totalArea = 0;
+    if (count($cleanedData) >= 4) {
+      $latitudes = array_column($cleanedData, 'latitude');
+      $longitudes = array_column($cleanedData, 'longitude');
+
+      $minLat = min($latitudes);
+      $maxLat = max($latitudes);
+      $minLon = min($longitudes);
+      $maxLon = max($longitudes);
+
+      $latDistance = TrackingHelper::haversineDistance($minLat, $minLon, $maxLat, $minLon);
+      $lonDistance = TrackingHelper::haversineDistance($minLat, $minLon, $minLat, $maxLon);
+      $totalArea = $latDistance * $lonDistance; // Luas area = panjang x lebar
+    }
 
     $session->total_area = $totalArea;
     $session->total_distance = $totalDistance;
@@ -52,4 +68,7 @@ class UpdateSessionTrackingService
 
     return $session;
   }
+
+  //calculate total area
+
 }
