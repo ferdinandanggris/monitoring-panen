@@ -1,19 +1,55 @@
-require('dotenv').config();
-const express = require('express');
-const app = express();
+const mqtt = require("mqtt");
+const trackingController = require("./controllers/trackingController");
 
-const trackingRoutes = require('./routes/trackingRoutes');
-const errorHandler = require('./middleware/errorHandler');
-const { startWorker } = require('./workers/sessionAutoEndWorker');
+const fs = require("fs");
+const path = require("path");
+const logFile = path.join(__dirname, "mqtt.log");
 
-app.use(express.json());
-app.use('/api', trackingRoutes);
-app.use(errorHandler);
+// MQTT Setup
+const mqttClient = mqtt.connect("mqtt://broker.hivemq.com");
+mqttClient.on("connect", () => {
+  console.log("📡 MQTT connected to HiveMQ");
+  mqttClient.subscribe("sim800l/data", (err) => {
+    if (!err) console.log("📥 Subscribed to sim800l/data");
+  });
+});
 
-// Start background worker
-startWorker();
+// MQTT Message Handler
+mqttClient.on("message", async (topic, message) => {
+  try {
+    const parsed = JSON.parse(message.toString());
+    const req = { body: parsed };
+    const res = {
+      status: (code) => ({
+        json: (obj) => {
+          if (code !== 200) {
+            // Simpan log error saja
+            const time = new Date().toISOString();
+            const log = `[${time}] ERROR ${code} | Topic: ${topic} | Payload: ${message.toString()} | Response: ${JSON.stringify(
+              obj
+            )}\n`;
+            fs.appendFileSync(logFile, log);
+          }
+          console.log(`[MQTT ${code}]`, obj);
+        },
+      }),
+    };
+    const next = (err) => {
+      const time = new Date().toISOString();
+      const log = `[${time}] EXCEPTION | Topic: ${topic} | Payload: ${message.toString()} | Error: ${
+        err.message
+      }\n`;
+      fs.appendFileSync(logFile, log);
+      console.error("❌ Controller error (MQTT):", err);
+    };
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Node server running on port ${PORT}`);
+    await trackingController.track(req, res, next);
+  } catch (e) {
+    const time = new Date().toISOString();
+    const log = `[${time}] PARSE ERROR | Topic: ${topic} | Payload: ${message.toString()} | Error: ${
+      e.message
+    }\n`;
+    fs.appendFileSync(logFile, log);
+    console.error("❌ Invalid MQTT message:", message.toString());
+  }
 });
