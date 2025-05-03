@@ -1,10 +1,10 @@
 version: "3.8"
 
 services:
-  mysql:
-    image: mysql:8
-    container_name: mysql
-    restart: always
+  db:
+    image: mariadb:10.7
+    container_name: database
+    restart: unless-stopped
     environment:
       MYSQL_DATABASE: monitoring
       MYSQL_USER: usermonitoring
@@ -13,7 +13,9 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - mysql_data:/var/lib/mysql
+      - dbdata:/var/lib/mysql
+    networks:
+      - app-network
 
   laravel:
     build: ./backend
@@ -23,9 +25,11 @@ services:
     ports:
       - "8000:8000"
     depends_on:
-      - mysql
+      - db
     working_dir: /var/www
     command: php artisan serve --host=0.0.0.0 --port=8000
+    networks:
+      - app-network
 
   react:
     build: ./frontend-web
@@ -39,7 +43,13 @@ services:
     ports:
       - "5000:5000"
     depends_on:
-      - mysql
+      - db
+    networks:
+      - app-network
 
 volumes:
-  mysql_data:
+  dbdata:
+
+networks:
+  app-network:
+    driver: bridge
