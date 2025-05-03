@@ -9,6 +9,8 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin -
 WORKDIR /var/www
 COPY . .
 
+RUN composer install && php artisan key:generate
+
 RUN composer install
 RUN chown -R www-data:www-data /var/www
 
