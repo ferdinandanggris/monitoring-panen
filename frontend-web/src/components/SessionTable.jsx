@@ -1,31 +1,33 @@
-export default function SessionTable({ points }) {
+import React from "react";
+export default function SessionTable({ sessions, onRowClick }) {
   return (
-    <div className="bg-white/20 backdrop-blur-md text-white rounded-lg shadow-lg p-4">
-      <h2 className="text-lg font-semibold mb-2">📋 Titik Koordinat</h2>
-      <div className="overflow-x-auto">
-        <table className="w-full table-auto text-sm">
-          <thead>
-            <tr className="bg-white/10 text-teal-100">
-              <th className="p-2 text-left">#</th>
-              <th className="p-2 text-left">Latitude</th>
-              <th className="p-2 text-left">Longitude</th>
-              <th className="p-2 text-left">Speed</th>
-              <th className="p-2 text-left">Fuel</th>
-            </tr>
-          </thead>
-          <tbody>
-            {points?.map((point, i) => (
-              <tr key={i} className="border-t border-white/10">
-                <td className="p-2">{i + 1}</td>
-                <td className="p-2">{point.latitude}</td>
-                <td className="p-2">{point.longitude}</td>
-                <td className="p-2">{point.speed}</td>
-                <td className="p-2">{point.fuel}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
+    <table className="w-full text-sm table-auto">
+      <thead className="bg-white/10">
+        <tr>
+          <th className="p-2 text-left">#</th>
+          <th className="p-2 text-left">Sopir</th>
+          <th className="p-2 text-left">Mesin</th>
+          <th className="p-2 text-left">Luas</th>
+          <th className="p-2 text-left">Jarak</th>
+          <th className="p-2 text-left">Biaya</th>
+        </tr>
+      </thead>
+      <tbody>
+        {sessions.map((session, i) => (
+          <tr
+            key={session.id}
+            onClick={() => onRowClick(session.latitude, session.longitude)}
+            className="cursor-pointer hover:bg-teal-100 text-black"
+          >
+            <td className="p-2">{i + 1}</td>
+            <td className="p-2">{session.driver.name || "-"}</td>
+            <td className="p-2">{session.machine.name}</td>
+            <td className="p-2">{session.total_area} m²</td>
+            <td className="p-2">{session.total_distance} m</td>
+            <td className="p-2">Rp {session.total_harga.toLocaleString()}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
   );
 }

@@ -1,11 +1,35 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import MapControls from "../../components/MapControls";
 import TrackingMap from "../../components/TrackingMap";
-import Topbar from "../../components/TopBar";
+import { getSessionDateRange } from "../../services/sessionService";
+import moment from "moment/moment";
+import SessionTable from "../../components/SessionTable";
+import StatCard from "../../components/StatCard";
+import usePolling from "../../hooks/usePolling";
 
 export default function Dashboard() {
   const [viewMode, setViewMode] = useState("line");
-  const [points, setPoints] = useState([]);
+  const [sessions, setSessions] = useState([]);
+  const [summary, setSummary] = useState({}); // 🆕
+  const [selectedCoordinate, setSelectedCoordinate] = useState(null); // 🆕
+
+  const handleRowClick = (lat, lng) => {
+    setSelectedCoordinate([parseFloat(lat), parseFloat(lng)]);
+  };
+  const fetchData = async () => {
+    const res = await getSessionDateRange(
+      moment("20250401").format("YYYY-MM-DD"),
+      moment().format("YYYY-MM-DD")
+    ); // ganti sessionId sesuai kebutuhan
+    // setPoints(res.points || []);
+
+    // loop and get details and set each details to points
+    console.log(res.data);
+    setSummary(res.data);
+    setSessions(res.data.sessions);
+  };
+
+  usePolling(fetchData, 3000); // Polling every 3 seconds
 
   return (
     <div className="p-4">
@@ -14,25 +38,13 @@ export default function Dashboard() {
       </h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        {[
-          "Total Mesin Aktif",
-          "Total Driver Aktif",
-          "Luas Panen Hari Ini",
-          "Total Biaya",
-        ].map((title, index) => (
-          <div
-            key={index}
-            className="bg-white/30 backdrop-blur-md border border-dark/40 p-4 rounded-md shadow-lg text-dark"
-          >
-            <h2 className="text-sm text-dark/70">{title}</h2>
-            <p className="text-xl font-semibold">
-              {index === 0 && "4"}
-              {index === 1 && "3"}
-              {index === 2 && "12.3 m²"}
-              {index === 3 && "Rp 415.000"}
-            </p>
-          </div>
-        ))}
+        {/* Stat Cards */}
+        <StatCard title={"Luas Panen Bulan ini"} value={summary.total_area} />
+        <StatCard
+          title={"Jarak Ditempuh Bulan ini"}
+          value={summary.total_distance}
+        />
+        <StatCard title={"Total Biaya"} value={summary.total_harga} />
       </div>
 
       <div className="space-y-4 my-2">
@@ -42,36 +54,17 @@ export default function Dashboard() {
           }
           onResetZoom={() => window.location.reload()} // sementara
         />
-        <TrackingMap points={points} viewMode={viewMode} />
+        <TrackingMap
+          sessions={sessions}
+          viewMode={viewMode}
+          selectedCoordinate={selectedCoordinate}
+        />
       </div>
 
       <div className="bg-white/30 backdrop-blur-md border border-dark/40 rounded-md shadow-lg p-4 text-dark">
         <h2 className="text-lg font-bold mb-2">⏱️ Riwayat Panen Terbaru</h2>
         <div className="overflow-x-auto">
-          <table className="w-full text-sm table-auto">
-            <thead className="bg-white/10">
-              <tr>
-                <th className="p-2 text-left">#</th>
-                <th className="p-2 text-left">Sopir</th>
-                <th className="p-2 text-left">Mesin</th>
-                <th className="p-2 text-left">Luas</th>
-                <th className="p-2 text-left">Jarak</th>
-                <th className="p-2 text-left">Biaya</th>
-              </tr>
-            </thead>
-            <tbody>
-              {[1, 2, 3].map((i) => (
-                <tr key={i} className="border-t border-dark/20">
-                  <td className="p-2">{i}</td>
-                  <td className="p-2">Sopir {i}</td>
-                  <td className="p-2">Mesin {i}</td>
-                  <td className="p-2">{8 + i} m²</td>
-                  <td className="p-2">{200 + i * 10} m</td>
-                  <td className="p-2">Rp {75000 + i * 5000}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <SessionTable onRowClick={handleRowClick} sessions={sessions} />
         </div>
       </div>
     </div>

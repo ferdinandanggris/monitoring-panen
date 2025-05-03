@@ -1,8 +1,10 @@
+import React from "react";
+
 export default function StatCard({ title, value }) {
   return (
-    <div className="bg-white/20 backdrop-blur-md text-white border border-teal-300/40 rounded-xl p-4 shadow">
-      <div className="text-sm text-teal-100">{title}</div>
-      <div className="text-2xl font-bold">{value}</div>
+    <div className="bg-white/30 backdrop-blur-md border border-dark/40 p-4 rounded-md shadow-lg text-dark">
+      <div className="text-sm text-dark/70">{title}</div>
+      <div className="text-xl font-semibold">{value}</div>
     </div>
   );
 }
