@@ -6,6 +6,8 @@ import Dashboard from "./pages/Dashboard/Dashboard";
 import MasterDriverPage from "./pages/MasterDriverPage";
 import MasterMachinePage from "./pages/MasterMachinePage";
 function App() {
+  console.log("✅ ENV:", import.meta.env.VITE_API_BASE_URL);
+
   return (
     <Routes>
       <Route element={<Sidebar />}>
