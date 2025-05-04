@@ -5,6 +5,8 @@ services:
     image: mariadb:10.7
     container_name: database
     restart: unless-stopped
+    env_file:
+      - ./backend/.env
     environment:
       MYSQL_DATABASE: monitoring
       MYSQL_USER: usermonitoring
@@ -34,6 +36,8 @@ services:
   react:
     build: ./frontend-web
     container_name: react
+    env_file:
+      - ./frontend-web/.env
     ports:
       - "3000:3000"
     environment:
@@ -42,6 +46,8 @@ services:
   node-server:
     build: ./node-server
     container_name: node-server
+    env_file:
+      - ./node-server/.env
     ports:
       - "5000:5000"
     depends_on:
