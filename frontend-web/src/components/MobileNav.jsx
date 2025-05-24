@@ -9,18 +9,22 @@ export default function MobileNav() {
         <span>Beranda</span>
       </NavLink>
       <NavLink
-        to="/master/mesin"
+        to="/master/machines"
         className="flex flex-col items-center text-sm"
       >
         <span>🛠️</span>
         <span>Mesin</span>
       </NavLink>
       <NavLink
-        to="/master/driver"
+        to="/master/drivers"
         className="flex flex-col items-center text-sm"
       >
         <span>👨‍🌾</span>
         <span>Driver</span>
+      </NavLink>
+      <NavLink to="/report" className="flex flex-col items-center text-sm">
+        <span>🎯</span>
+        <span>Laporan</span>
       </NavLink>
     </nav>
   );
