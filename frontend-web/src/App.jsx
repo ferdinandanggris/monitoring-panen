@@ -5,6 +5,7 @@ import NotFound from "./pages/NotFound";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import MasterDriverPage from "./pages/MasterDriverPage";
 import MasterMachinePage from "./pages/MasterMachinePage";
+import ReportSessionPage from "./pages/ReportSessionPage";
 function App() {
   console.log("✅ ENV:", import.meta.env.VITE_API_BASE_URL);
 
@@ -15,6 +16,7 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/master/drivers" element={<MasterDriverPage />} />
         <Route path="/master/machines" element={<MasterMachinePage />} />
+        <Route path="/report" element={<ReportSessionPage />} />
         {/* <Route path="/master/mesin" element={<MachineList />} />
         <Route path="/master/driver" element={<DriverList />} /> */}
       </Route>

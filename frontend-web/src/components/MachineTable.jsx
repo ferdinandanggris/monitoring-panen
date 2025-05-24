@@ -21,6 +21,7 @@ export default function MachineTable({ machines }) {
               <td className="p-2">{m.notes || "-"}</td>
               <td className="p-2">{m.current_driver?.name || "-"}</td>
               <td className="p-2 space-x-2">
+                <button className="text-green-600 hover:underline">Maps</button>
                 <button className="text-blue-600 hover:underline">Edit</button>
                 <button className="text-red-600 hover:underline">Hapus</button>
               </td>

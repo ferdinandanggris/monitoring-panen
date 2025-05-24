@@ -9,6 +9,7 @@ import usePolling from "../../hooks/usePolling";
 
 export default function Dashboard() {
   const [viewMode, setViewMode] = useState("line");
+  const [showPoints, setShowPoints] = useState(false); // 🆕
   const [sessions, setSessions] = useState([]);
   const [summary, setSummary] = useState({}); // 🆕
   const [selectedCoordinate, setSelectedCoordinate] = useState(null); // 🆕
@@ -55,11 +56,13 @@ export default function Dashboard() {
             setViewMode(viewMode === "line" ? "grid" : "line")
           }
           onResetZoom={() => window.location.reload()} // sementara
+          onSetShowPoints={() => setShowPoints(!showPoints)}
         />
         <TrackingMap
           sessions={sessions}
           viewMode={viewMode}
           selectedCoordinate={selectedCoordinate}
+          showPoints={showPoints}
         />
       </div>
 
