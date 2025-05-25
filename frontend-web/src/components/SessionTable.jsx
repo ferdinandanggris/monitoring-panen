@@ -10,6 +10,7 @@ export default function SessionTable({ sessions, onRowClick }) {
           <th className="p-2 text-left">Luas</th>
           <th className="p-2 text-left">Jarak</th>
           <th className="p-2 text-left">Biaya</th>
+          <th className="p-2 text-left">Status Aktif</th>
         </tr>
       </thead>
       <tbody>
@@ -30,6 +31,13 @@ export default function SessionTable({ sessions, onRowClick }) {
             </td>
             <td className="p-2">
               Rp {parseFloat(session.total_harga).toLocaleString()}
+            </td>
+            <td className="p-2">
+              {!session.end_time ? (
+                <span className="text-green-600">Aktif</span>
+              ) : (
+                <span className="text-red-600">Nonaktif</span>
+              )}
             </td>
           </tr>
         ))}
