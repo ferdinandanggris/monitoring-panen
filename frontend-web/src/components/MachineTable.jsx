@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function MachineTable({ machines }) {
+export default function MachineTable({ machines,onEdit }) {
   return (
     <div className="overflow-auto bg-white rounded shadow text-sm">
       <table className="w-full table-auto">
@@ -21,8 +21,14 @@ export default function MachineTable({ machines }) {
               <td className="p-2">{m.notes || "-"}</td>
               <td className="p-2">{m.current_driver?.name || "-"}</td>
               <td className="p-2 space-x-2">
-                <button className="text-blue-600 hover:underline">Edit</button>
-                <button className="text-red-600 hover:underline">Hapus</button>
+              <td className="px-6 py-4 whitespace-nowrap">
+                <button
+                  onClick={() => onEdit(m)}
+                  className="text-indigo-600 hover:text-indigo-900 flex items-center"
+                >
+                  <PencilIcon className="h-5 w-5 mr-1" /> Edit
+                </button>
+            </td>
               </td>
             </tr>
           ))}
