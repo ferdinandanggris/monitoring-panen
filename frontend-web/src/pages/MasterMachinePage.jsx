@@ -9,6 +9,7 @@ export default function MasterMachinePage() {
   const { machines, loading, refetch } = useMachines();
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedMachine, setSelectedMachine] = useState(null);
+  const BASE = import.meta.env.VITE_API_BASE_URL;
 
   const openAdd = () => {
     setSelectedMachine(null);
@@ -20,14 +21,14 @@ export default function MasterMachinePage() {
     setModalOpen(true);
   };
 
-  const handleSubmit = async ({ id, name, code }) => {
+  const handleSubmit = async ({ id, name, notes }) => {
     try {
       const method = id ? "PUT" : "POST";
-      const url = id ? `/api/machines/${id}` : "/api/machines";
+      const url = id ? `${BASE}/machine/${id}` : `${BASE}/machine`;
       await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, code }),
+        body: JSON.stringify({ name, notes }),
       });
       refetch?.();
     } catch (error) {

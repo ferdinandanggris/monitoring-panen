@@ -1,5 +1,7 @@
 import React from "react";
-export default function DriverTable({ drivers }) {
+import { PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
+
+export default function DriverTable({ drivers, onEdit, onDelete }) {
   return (
     <div className="overflow-auto bg-white rounded shadow text-sm">
       <table className="w-full table-auto">
@@ -17,9 +19,19 @@ export default function DriverTable({ drivers }) {
               <td className="p-2">{index + 1}</td>
               <td className="p-2">{driver.name}</td>
               <td className="p-2">{driver.notes || "-"}</td>
-              <td className="p-2 space-x-2">
-                <button className="text-blue-600 hover:underline">Edit</button>
-                <button className="text-red-600 hover:underline">Hapus</button>
+              <td className="p-2 space-x-2 flex items-center">
+                <button
+                  onClick={() => onEdit(driver)}
+                  className="flex items-center text-blue-600 hover:underline"
+                >
+                  <PencilIcon className="h-5 w-5 mr-1" />
+                </button>
+                <button
+                  onClick={() => onDelete(driver.id)}
+                  className="flex items-center text-red-600 hover:underline"
+                >
+                  <TrashIcon className="h-5 w-5 mr-1" />
+                </button>
               </td>
             </tr>
           ))}

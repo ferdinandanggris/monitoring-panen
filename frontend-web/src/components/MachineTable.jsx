@@ -1,3 +1,4 @@
+import { PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
 import React from "react";
 
 export default function MachineTable({ machines, onEdit }) {
@@ -20,22 +21,20 @@ export default function MachineTable({ machines, onEdit }) {
               <td className="p-2">{m.name}</td>
               <td className="p-2">{m.notes || "-"}</td>
               <td className="p-2">{m.current_driver?.name || "-"}</td>
-              <td className="p-2 space-x-2">
-                <td className="px-6 py-4 whitespace-nowrap">
+              <td className="p-2 space-x-2 flex items-center">
                   <button
                     onClick={() => onEdit(m)}
-                    className="text-indigo-600 hover:text-indigo-900 flex items-center"
+                    className="flex items-center text-blue-600 hover:underline"
                   >
-                    <PencilIcon className="h-5 w-5 mr-1" /> Edit
+                    <PencilIcon className="h-5 w-5 mr-1" />
                   </button>
-                  <button className="text-green-600 hover:underline">
-                    Maps
-                  </button>
-                  <button className="text-red-600 hover:underline">
-                    Hapus
+                  <button
+                    // onClick={() => onDelete(driver.id)}
+                    className="flex items-center text-red-600 hover:underline"
+                  >
+                    <TrashIcon className="h-5 w-5 mr-1" />
                   </button>
                 </td>
-              </td>
             </tr>
           ))}
         </tbody>

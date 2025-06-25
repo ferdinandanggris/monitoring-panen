@@ -12,5 +12,12 @@ export default function useMachines() {
     });
   }, []);
 
-  return { machines, loading };
+  const refetch = () => {
+    getAllMachines().then((data) => {
+      setMachines(data);
+      setLoading(false);
+    });
+  }
+
+  return { machines, loading, refetch };
 }

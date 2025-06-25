@@ -12,5 +12,12 @@ export default function useDrivers() {
     });
   }, []);
 
-  return { drivers, loading };
+  const refetch = ()=>{
+    getAllDrivers().then((data) => {
+      setDrivers(data);
+      setLoading(false);
+    });
+  }
+
+  return { drivers, loading , refetch};
 }
