@@ -11,6 +11,7 @@ export default function SessionTable({ sessions, onRowClick }) {
           <th className="p-2 text-left">Jarak</th>
           <th className="p-2 text-left">Biaya</th>
           <th className="p-2 text-left">Status Aktif</th>
+          <th className="p-2 text-left">Kecepatan Terakhir</th>
         </tr>
       </thead>
       <tbody>
@@ -38,6 +39,12 @@ export default function SessionTable({ sessions, onRowClick }) {
               ) : (
                 <span className="text-red-600">Nonaktif</span>
               )}
+            </td>
+            <td className="p-2 ">
+              {/* cari kecepatan terakhir  */}
+              {session.details[session.details.length - 1].speed
+                ? (parseFloat(session.details[session.details.length - 1].speed).toFixed(2) + " km/jam")
+                : "-"}
             </td>
           </tr>
         ))}
