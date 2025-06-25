@@ -11,6 +11,7 @@ import { useEffect } from "react";
 import React from "react";
 import {
   SmallCircleMarker,
+  SuperTinyDefaultMarker,
   TinyDefaultMarker,
   TractorEmojiMarker,
 } from "../constants/mapIcons";
@@ -28,6 +29,7 @@ export default function TrackingMap({
   sessions,
   viewMode,
   selectedCoordinate,
+  showPoints = false, // 🆕
 }) {
   const defaultCenter =
     selectedCoordinate ||
@@ -94,6 +96,24 @@ export default function TrackingMap({
                   📐 Luas: {parseFloat(session.total_area).toFixed(2)} m²
                 </Popup>
               </Marker>
+            )}
+
+            {/* Render Marker all point */}
+            {showPoints && points.length > 0 && (
+              <>
+                {points.map((point, j) => (
+                  <Marker
+                    key={`${session.id}-${j}`}
+                    position={point}
+                    icon={SuperTinyDefaultMarker}
+                  >
+                    <Popup>
+                      {session.details[j].latitude},{" "}
+                      {session.details[j].longitude}
+                    </Popup>
+                  </Marker>
+                ))}
+              </>
             )}
           </div>
         );

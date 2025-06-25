@@ -21,10 +21,18 @@ export const TinyDefaultMarker = new L.Icon({
   popupAnchor: [1, -22],
 });
 
+export const SuperTinyDefaultMarker = new L.Icon({
+  iconUrl: markerIcon,
+  // shadowUrl: markerShadow,
+  iconSize: [10, 16], // Ukuran lebih kecil
+  iconAnchor: [5, 16],
+  popupAnchor: [1, -14],
+});
+
 export const TractorEmojiMarker = new L.DivIcon({
   className: "",
   html: `<div style="
-    font-size: 20px;
+    font-size: 12px;
     line-height: 1;
     text-shadow: 0 0 2px white;
   ">🚜</div>`,
