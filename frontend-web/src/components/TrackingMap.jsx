@@ -40,6 +40,10 @@ export default function TrackingMap({
         ]
       : [-7.8, 111.5]);
 
+      // const token = import.meta.env.VITE_MAPBOX_TOKEN;
+      const token = "pk.eyJ1IjoiZ2FidGVjaCIsImEiOiJjbWNocmNmZHQweHkyMmxvbWI2cTJ5MXdhIn0.5ehEqk6N4hP7ucIAaTgfVA";
+      const username = "gabtech";
+      const styleId  = "satellite-v9";  // <-- ganti ini
   return (
     <MapContainer
       center={defaultCenter}
@@ -47,7 +51,7 @@ export default function TrackingMap({
       scrollWheelZoom={true}
       className="h-[400px] w-full rounded-xl shadow-lg z-0"
     >
-      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+      <TileLayer url={`https://api.mapbox.com/styles/v1/mapbox/satellite-v9/tiles/256/{z}/{x}/{y}@2x?access_token=${token}`} tileSize={512} zoomOffset={-1}   />
       <ChangeView center={defaultCenter} />
 
       {sessions.map((session, i) => {
