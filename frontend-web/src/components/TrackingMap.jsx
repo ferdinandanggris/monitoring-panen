@@ -89,7 +89,7 @@ export default function TrackingMap({
 
             {/* Marker titik awal */}
             {points.length > 0 && (
-              <Marker position={points[0]} icon={TractorEmojiMarker}>
+              <Marker position={points[points.length - 1]} icon={TractorEmojiMarker}>
                 <Popup>
                   🚜 Mesin: {session.machine.name}
                   <br />
