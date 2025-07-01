@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import MapControls from "../../components/MapControls";
 import TrackingMap from "../../components/TrackingMap";
-import { getSessionDateRange } from "../../services/sessionService";
+import { removeSession } from "../../services/sessionService";
+import {  getSessionDateRange } from "../../services/sessionService";
 import moment from "moment/moment";
 import SessionTable from "../../components/SessionTable";
 import StatCard from "../../components/StatCard";
@@ -29,6 +30,21 @@ export default function Dashboard() {
     setSummary(res.data);
     setSessions(res.data.sessions);
   };
+
+  const handleDelete = async (sessionId) => {
+    const ok = window.confirm("Yakin ingin menghapus session ini?");
+    if (!ok) return;
+
+    try {
+      await removeSession(sessionId);
+      // refresh daftar
+      fetchData();
+    } catch (err) {
+      console.error(err);
+      alert("Gagal menghapus session.");
+    }
+  };
+
 
   usePolling(fetchData, 3000); // Polling every 3 seconds
 
@@ -69,7 +85,7 @@ export default function Dashboard() {
       <div className="bg-white/30 backdrop-blur-md border border-dark/40 rounded-md shadow-lg p-4 text-dark">
         <h2 className="text-lg font-bold mb-2">⏱️ Riwayat Panen Terbaru</h2>
         <div className="overflow-x-auto">
-          <SessionTable onRowClick={handleRowClick} sessions={sessions} />
+          <SessionTable onRowClick={handleRowClick} sessions={sessions} onDelete={handleDelete} />
         </div>
       </div>
     </div>

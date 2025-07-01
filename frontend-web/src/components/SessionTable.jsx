@@ -1,5 +1,5 @@
 import React from "react";
-export default function SessionTable({ sessions, onRowClick }) {
+export default function SessionTable({ sessions, onRowClick, onDelete}) {
   return (
     <table className="w-full text-sm table-auto">
       <thead className="bg-white/10">
@@ -45,6 +45,17 @@ export default function SessionTable({ sessions, onRowClick }) {
               {session.details[session.details.length - 1].speed
                 ? (parseFloat(session.details[session.details.length - 1].speed).toFixed(2) + " km/jam")
                 : "-"}
+            </td>
+            <td className="p-2 text-center">
+              <button
+                onClick={e => {
+                  e.stopPropagation();           // mencegah row click
+                  onDelete(session.id);
+                }}
+                className="px-2 py-1 bg-red-500 hover:bg-red-600 text-white rounded"
+              >
+                Hapus
+              </button>
             </td>
           </tr>
         ))}

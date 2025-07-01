@@ -28,3 +28,8 @@ export const getActiveSession = async (machineId) => {
   const response = await API.get(`/machine/${machineId}/active-session`);
   return response.data;
 };
+
+export const removeSession = async (sessionId) => {
+  const response = await API.delete(`/sessions/${sessionId}`);
+  return response.data;
+};

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\SessionController;
 use App\Http\Controllers\Api\TrackingController;
 use Illuminate\Support\Facades\Route;
 
@@ -29,3 +30,5 @@ Route::group(['prefix' => 'settings'], function () {
   Route::put('/{settings}', [\App\Http\Controllers\Api\SettingsController::class, "update"])->name('api.settings.update');
   Route::delete('/{settings}', [\App\Http\Controllers\Api\SettingsController::class, "destroy"])->name('api.settings.destroy');
 });
+
+Route::delete('sessions/{session}', [SessionController::class, 'destroy']);
