@@ -10,13 +10,17 @@
   "dependencies": {
     "@heroicons/react": "^2.2.0",
     "axios": "^1.9.0",
+    "date-fns": "^4.1.0",
     "dotenv": "^16.5.0",
     "leaflet": "^1.9.4",
     "moment": "^2.30.1",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "react-date-range": "^2.0.1",
+    "react-dom": "^18.x.x",
     "react-leaflet": "^4.2.1",
-    "react-router-dom": "^6.30.0"
+    "react-router-dom": "^6.30.0",
+    "react-spring": "^9.7.5",
+    "react-spring-bottom-sheet": "^3.4.1"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.0.0",
