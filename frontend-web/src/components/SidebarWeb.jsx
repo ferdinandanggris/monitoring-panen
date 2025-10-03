@@ -11,7 +11,7 @@ export default function SidebarWeb() {
 
   const sidebarTransaction = [
     { path: "/report", label: "Laporan" },
-    { path: "/setting", label: "Pengaturan" },
+    // { path: "/setting", label: "Pengaturan" },
   ];
 
   return (
