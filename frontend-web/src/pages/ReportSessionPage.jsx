@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import MapControls from "../components/MapControls";
 import TrackingMap from "../components/TrackingMap";
 import { getSessionDateRange } from "../services/sessionService";
-import moment from "moment";
+import { format } from "date-fns";
+import DateRangePicker from "../components/DateRangePicker";
 
 // Fetch sessions data from API
 const fetchSessions = async () => {
@@ -11,22 +12,32 @@ const fetchSessions = async () => {
   return response.json();
 };
 
-const fetchData = async () => {
-  const res = await getSessionDateRange(
-    moment("20250401").format("YYYY-MM-DD"),
-    moment().format("YYYY-MM-DD")
-  ); // ganti sessionId sesuai kebutuhan
-  // setPoints(res.points || []);
-
-  // loop and get details and set each details to points
-  console.log(res.data);
-  return res.data.sessions || [];
-};
 
 export default function ReportSessionPage() {
   const [sessions, setSessions] = useState([]);
   const [selectedSession, setSelectedSession] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
+  const [startDate, setStartDate] = useState(format(new Date(), 'yyyy-MM-dd'));
+  const [endDate, setEndDate] = useState(format((new Date()).setMonth((new Date()).getMonth() - 1), 'yyyy-MM-dd'));
+
+  const fetchData = async (startDate, endDate) => {
+    const res = await getSessionDateRange(
+      startDate,
+      endDate
+    ); // ganti sessionId sesuai kebutuhan
+    // setPoints(res.points || []);
+
+    // loop and get details and set each details to points
+    console.log(res.data);
+    return res.data.sessions || [];
+  };
+
+  const handleDateChange = async (start, end) => {
+    setStartDate(start);
+    setEndDate(end);
+    const data = await fetchData(start, end);
+    setSessions(data || []);
+  };
 
   // Map control states
   const [viewMode, setViewMode] = useState("line"); // 'line' or 'grid'
@@ -35,7 +46,7 @@ export default function ReportSessionPage() {
 
   useEffect(() => {
     const load = async () => {
-      const data = await fetchData();
+      const data = await fetchData(startDate, endDate);
       setSessions(data || []);
     };
     load();
@@ -63,9 +74,12 @@ export default function ReportSessionPage() {
   return (
     <div className="p-4 sm:p-6">
       <h1 className="text-2xl sm:text-3xl font-semibold mb-4">
-        Laporan Per Session
+        Laporan Per Sesi
       </h1>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="my-5">
+        <DateRangePicker onDateChange={handleDateChange} defaultEndDate={endDate} defaultFirstDate={startDate} />
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-3 gap-4">
         {sessions.map((session) => (
           <div
             key={session.id}
@@ -89,7 +103,11 @@ export default function ReportSessionPage() {
           </div>
         ))}
       </div>
-
+      {sessions.length === 0 && (
+        <div className="flex items-center justify-center h-full w-full">
+          <div className="text-center text-gray-600">Sesi Kosong</div>
+        </div>
+      )}
       {/* Modal */}
       {isOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 px-4">
@@ -131,6 +149,15 @@ export default function ReportSessionPage() {
                   />
                 )}
               </div>
+              <td className="">
+              Total Luas: {parseFloat(selectedSession.total_area).toFixed(2)} m²
+            </td>
+            <td className="">
+              Total Jarak: {parseFloat(selectedSession.total_distance).toFixed(2)} m
+            </td>
+            <td className="">
+              Total Harga: Rp {parseFloat(selectedSession.total_harga).toLocaleString()}
+            </td>
             </div>
           </div>
         </div>

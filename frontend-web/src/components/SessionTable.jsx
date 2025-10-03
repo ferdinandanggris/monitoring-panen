@@ -59,6 +59,14 @@ export default function SessionTable({ sessions, onRowClick, onDelete}) {
             </td>
           </tr>
         ))}
+
+        {sessions.length === 0 && (
+          <tr>
+            <td colSpan="8" className="p-2 text-center bg-slate-100">
+              Tidak ada data
+            </td>
+          </tr>
+        )}
       </tbody>
     </table>
   );

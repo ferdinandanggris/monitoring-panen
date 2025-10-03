@@ -1,5 +1,6 @@
 import React from "react";
-import { PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
+import IconEdit from "./icon/IconEdit";
+import IconTrash from "./icon/IconTrash";
 
 export default function DriverTable({ drivers, onEdit, onDelete }) {
   return (
@@ -24,13 +25,13 @@ export default function DriverTable({ drivers, onEdit, onDelete }) {
                   onClick={() => onEdit(driver)}
                   className="flex items-center text-blue-600 hover:underline"
                 >
-                  <PencilIcon className="h-5 w-5 mr-1" />
+                    <IconEdit fill="#0ea5e9" width={14}/>
                 </button>
                 <button
                   onClick={() => onDelete(driver.id)}
                   className="flex items-center text-red-600 hover:underline"
                 >
-                  <TrashIcon className="h-5 w-5 mr-1" />
+                   <IconTrash fill="red" width={14}/>
                 </button>
               </td>
             </tr>

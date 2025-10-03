@@ -4,8 +4,10 @@ import React, { useState } from "react";
 import IconButton from "../components/IconButton";
 import { PlusIcon, PencilIcon } from "@heroicons/react/24/solid";
 import MachineModal from "../components/MachineModal";
+import useDrivers from "../hooks/useDrivers";
 
 export default function MasterMachinePage() {
+  const { drivers } = useDrivers();
   const { machines, loading, refetch } = useMachines();
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedMachine, setSelectedMachine] = useState(null);
@@ -21,14 +23,14 @@ export default function MasterMachinePage() {
     setModalOpen(true);
   };
 
-  const handleSubmit = async ({ id, name, notes }) => {
+  const handleSubmit = async ({ id, name, notes, current_driver_id }) => {
     try {
       const method = id ? "PUT" : "POST";
       const url = id ? `${BASE}/machine/${id}` : `${BASE}/machine`;
       await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, notes }),
+        body: JSON.stringify({ name, notes, current_driver_id }),
       });
       refetch?.();
     } catch (error) {
@@ -56,6 +58,7 @@ export default function MasterMachinePage() {
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
         onSubmit={handleSubmit}
+        drivers={drivers}
         initialData={selectedMachine}
       />
     </div>
