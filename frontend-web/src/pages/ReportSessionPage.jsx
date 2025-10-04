@@ -83,7 +83,7 @@ export default function ReportSessionPage() {
         {sessions.map((session) => (
           <div
             key={session.id}
-            className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 border rounded-lg shadow-sm bg-white"
+            className="flex flex-col gap-2 justify-between p-4 border rounded-lg shadow-sm bg-white"
           >
             <div className="mb-2 sm:mb-0">
               <p className="font-medium">Mesin: {session.machine.name}</p>
