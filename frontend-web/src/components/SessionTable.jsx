@@ -44,8 +44,8 @@ export default function SessionTable({ sessions, onRowClick, onDelete}) {
             </td>
             <td className="p-2 ">
               {/* cari kecepatan terakhir  */}
-              {session.details[session.details.length - 1].speed
-                ? (parseFloat(session.details[session.details.length - 1].speed).toFixed(2) + " km/jam")
+              {session.details[session.details.length - 1]?.speed
+                ? (parseFloat(session.details[session.details.length - 1]?.speed).toFixed(2) + " km/jam")
                 : "-"}
             </td>
             <td className="p-2 text-center">

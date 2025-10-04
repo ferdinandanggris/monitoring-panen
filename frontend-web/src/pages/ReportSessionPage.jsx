@@ -17,8 +17,8 @@ export default function ReportSessionPage() {
   const [sessions, setSessions] = useState([]);
   const [selectedSession, setSelectedSession] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
-  const [startDate, setStartDate] = useState(format(new Date(), 'yyyy-MM-dd'));
-  const [endDate, setEndDate] = useState(format((new Date()).setMonth((new Date()).getMonth() - 1), 'yyyy-MM-dd'));
+  const [startDate, setStartDate] = useState(format((new Date()).setMonth((new Date()).getMonth() - 1), 'yyyy-MM-dd'));
+  const [endDate, setEndDate] = useState(format(new Date(), 'yyyy-MM-dd'));
 
   const fetchData = async (startDate, endDate) => {
     const res = await getSessionDateRange(
