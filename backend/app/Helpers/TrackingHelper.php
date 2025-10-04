@@ -124,55 +124,169 @@ class TrackingHelper
       return round($area, 2); // Meter Persegi (m²)
   }
   
+  // --- Fungsi Baru untuk Convex Hull ---
+
   /**
-   * Menghitung luas Geodesik dari poligon berdasarkan koordinat Lat/Lng.
-   * (Dipertahankan untuk Luas Batas)
+   * Menghitung kuadrat jarak antara dua titik planar. Digunakan untuk sorting collinear.
+   */
+  private static function sqDistance(array $p1, array $p2): float
+  {
+      return pow($p1['x'] - $p2['x'], 2) + pow($p1['y'] - $p2['y'], 2);
+  }
+
+  /**
+   * Menghitung cross product (orientasi) dari tiga titik (o, a, b).
+   * > 0 : counter-clockwise (CCW) turn
+   * < 0 : clockwise (CW) turn
+   * = 0 : collinear
+   */
+  private static function crossProduct(array $o, array $a, array $b): float
+  {
+      // o, a, b adalah array ['x' => x, 'y' => y]
+      return (($a['x'] - $o['x']) * ($b['y'] - $o['y'])) - (($a['y'] - $o['y']) * ($b['x'] - $o['x']));
+  }
+
+  /**
+   * Menggunakan algoritma Graham Scan untuk menemukan Convex Hull (batas terluar) dari serangkaian titik planar.
+   */
+  public static function findConvexHull(array $points): array
+  {
+      // Membutuhkan minimal 3 titik
+      if (count($points) < 3) {
+          return $points;
+      }
+
+      // 1. Temukan Titik Pivot (Titik terendah Y, terkecil X)
+      usort($points, function ($a, $b) {
+          if ($a['y'] != $b['y']) {
+              return $a['y'] <=> $b['y'];
+          }
+          return $a['x'] <=> $b['x'];
+      });
+      $p0 = $points[0];
+      
+      // 2. Sort titik sisanya berdasarkan sudut polar dari p0 (menggunakan cross product)
+      $remainingPoints = array_slice($points, 1);
+      
+      usort($remainingPoints, function ($a, $b) use ($p0) {
+          $cp = self::crossProduct($p0, $a, $b);
+          
+          // Jika tidak kolinear, sort berdasarkan cross product (CCW)
+          if ($cp != 0) {
+              return -$cp;
+          }
+          
+          // Jika kolinear, sort berdasarkan jarak dari p0 (terjauh terakhir)
+          $distA = self::sqDistance($p0, $a);
+          $distB = self::sqDistance($p0, $b);
+          return $distA <=> $distB;
+      });
+
+      // Hapus titik kolinear di tengah, hanya simpan yang terjauh
+      $m = count($remainingPoints);
+      if ($m > 0) {
+          $filteredRemaining = [$remainingPoints[0]];
+          for ($i = 1; $i < $m; $i++) {
+              $lastFiltered = end($filteredRemaining);
+              $cp = self::crossProduct($p0, $lastFiltered, $remainingPoints[$i]);
+
+              if ($cp != 0) {
+                  $filteredRemaining[] = $remainingPoints[$i];
+              } else {
+                  // Collinear: update last point to current point (keep farthest)
+                  $filteredRemaining[count($filteredRemaining) - 1] = $remainingPoints[$i];
+              }
+          }
+          $remainingPoints = $filteredRemaining;
+      }
+      
+      if (count($remainingPoints) < 2) {
+          return $points;
+      }
+
+      // 3. Proses Stack Graham Scan
+      $stack = [$p0, $remainingPoints[0]];
+      
+      for ($i = 1; $i < count($remainingPoints); $i++) {
+          $nextPoint = $remainingPoints[$i];
+          
+          // Pop jika 3 titik terakhir membuat belokan CW atau kolinear
+          while (count($stack) > 1 && self::crossProduct($stack[count($stack) - 2], $stack[count($stack) - 1], $nextPoint) <= 0) {
+              array_pop($stack);
+          }
+          $stack[] = $nextPoint;
+      }
+      
+      return $stack;
+  }
+  
+  // --- Fungsi Lama (Shoelace) Diubah untuk Memakai Convex Hull ---
+
+  /**
+   * Menghitung luas poligon menggunakan Formula Shoelace.
+   * Fungsi ini sekarang memfilter titik input dengan Convex Hull.
    */
   public static function calculateGeodesicArea(array $points): float
   {
-      // ... (kode calculateGeodesicArea sama dengan sebelumnya, dipertahankan)
       $points = array_values($points);
       
-      $area = 0.0;
-      $earthRadius = self::EARTH_RADIUS; 
-      $n = count($points);
+      if (count($points) < 3) { 
+          return 0.0;
+      }
+
+      // 1. Tentukan Titik Origin Lokal (Titik pertama) untuk konversi planar
+      $latStart = (float)$points[0]['latitude'];
+      $lngStart = (float)$points[0]['longitude'];
+
+      // 2. Konversi Lat/Lng menjadi koordinat Planar Lokal (X/Y dalam meter)
+      $planarPoints = [];
+      foreach ($points as $p) {
+          $lat = (float)$p['latitude'];
+          $lng = (float)$p['longitude'];
+
+          // Y (Utara-Selatan)
+          $y = self::haversineDistance($latStart, $lngStart, $lat, $lngStart);
+          if ($lat < $latStart) { $y = -$y; }
+
+          // X (Timur-Barat)
+          $x = self::haversineDistance($latStart, $lngStart, $latStart, $lng);
+          if ($lng < $lngStart) { $x = -$x; }
+
+          $planarPoints[] = ['x' => $x, 'y' => $y];
+      }
+
+      // 3. Terapkan CONVEX HULL untuk mendapatkan hanya titik batas terluar
+      $hullPoints = self::findConvexHull($planarPoints);
       
+      $n = count($hullPoints);
       if ($n < 3) { 
           return 0.0;
       }
-      
-      $closedPoints = $points;
-      $firstPoint = $points[0]; 
-      $lastPoint = $points[$n - 1];
+
+      // 4. Pastikan Poligon Tertutup (Titik terakhir = Titik pertama)
+      $firstHullPoint = $hullPoints[0];
+      $lastHullPoint = $hullPoints[$n - 1];
 
       if (
-          (float)$firstPoint['latitude'] !== (float)$lastPoint['latitude'] || 
-          (float)$firstPoint['longitude'] !== (float)$lastPoint['longitude']
+          abs($firstHullPoint['x'] - $lastHullPoint['x']) > 0.01 ||
+          abs($firstHullPoint['y'] - $lastHullPoint['y']) > 0.01
       ) {
-          $closedPoints[] = $firstPoint;
-          $n = count($closedPoints); 
+          $hullPoints[] = $firstHullPoint;
+          $n = count($hullPoints);
       }
       
+      $area = 0.0;
+
+      // 5. Terapkan Formula Shoelace pada Hull Points: A = 0.5 * | Sum(X_i * Y_{i+1} - X_{i+1} * Y_i) |
       for ($i = 0; $i < $n - 1; $i++) {
-          $p1 = $closedPoints[$i];
-          $p2 = $closedPoints[$i + 1];
-
-          $lat1 = (float)$p1['latitude'];
-          $lng1 = (float)$p1['longitude'];
-          $lat2 = (float)$p2['latitude'];
-          $lng2 = (float)$p2['longitude'];
-          
-          $lat1Rad = deg2rad($lat1);
-          $lng1Rad = deg2rad($lng1);
-          $lat2Rad = deg2rad($lat2);
-          $lng2Rad = deg2rad($lng2);
-
-          $area += ($lng2Rad - $lng1Rad) * (2 + sin($lat1Rad) + sin($lat2Rad));
+          $p1 = $hullPoints[$i];
+          $p2 = $hullPoints[$i + 1];
+          $area += ($p1['x'] * $p2['y'] - $p2['x'] * $p1['y']);
       }
 
-      $area = $area * $earthRadius * $earthRadius / 2.0;
+      $area = abs($area) / 2.0;
 
-      return round(abs($area), 2); 
+      return round($area, 2); 
   }
   
   public static function convertSqMetersToHectares(float $squareMeters): float
