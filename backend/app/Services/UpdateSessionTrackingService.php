@@ -12,6 +12,7 @@ class UpdateSessionTrackingService
   public static function updateSessionSummary($sessionId)
   {
     $session = Session::with(['details', 'driver', 'machine'])->findOrFail($sessionId);
+
    
     $latestDetail = SessionDetail::where('session_id', $sessionId)
       ->orderBy('sequence', 'desc')

@@ -5,7 +5,7 @@ namespace App\Helpers;
 class TrackingHelper
 {
   const EARTH_RADIUS = 6371000; // in meters
-  const MIN_WORKING_SPEED = 5.0; // in km/h. Kecepatan minimal agar dianggap kerja produktif
+  const MIN_WORKING_SPEED = 0.0; // in km/h. Kecepatan minimal agar dianggap kerja produktif
 
   /**
    * Membersihkan data tracking:
