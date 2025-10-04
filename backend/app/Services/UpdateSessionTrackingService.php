@@ -47,20 +47,20 @@ class UpdateSessionTrackingService
     Log::info('DEBUG AREA: Session ' . $sessionId . ' - Titik Mentah = ' . count($rawData));
 
     // 1. Bersihkan data (Filter kecepatan, titik diam, dan noise)
-    $cleanedData = TrackingHelper::cleanTrackingData($rawData);
+    // $cleanedData = TrackingHelper::cleanTrackingData($rawData);
 
     // 🆕 LOGGING 2: Jumlah Titik BERSIH (Setelah Filter)
-    Log::info('DEBUG AREA: Session ' . $sessionId . ' - Titik BERSIH = ' . count($cleanedData));
+    Log::info('DEBUG AREA: Session ' . $sessionId . ' - Titik BERSIH = ' . count($rawData));
 
     // 2. Hitung Jarak BERSIH (hanya yang produktif)
-    $totalDistance = TrackingHelper::calculateTotalDistance($cleanedData);
+    $totalDistance = TrackingHelper::calculateTotalDistance($rawData);
 
     // 🆕 LOGGING 3: Total Jarak Bersih
     Log::info('DEBUG AREA: Session ' . $sessionId . ' - Total Jarak Bersih = ' . $totalDistance . ' m');
 
     // 3. Hitung Luas Area Kerja Produktif (Raster Aproksimasi)
     $WORKING_WIDTH = 2.5;
-    $totalArea = TrackingHelper::calculateGeodesicArea($cleanedData);
+    $totalArea = TrackingHelper::calculateGeodesicArea($rawData);
     // $totalArea = TrackingHelper::calculateWorkingArea($totalDistance, $WORKING_WIDTH);
 
     // 🆕 LOGGING 4: Total Area
@@ -70,6 +70,7 @@ class UpdateSessionTrackingService
     $session->total_distance = $totalDistance;
     $session->last_sequence_session_detail = $latestDetail->sequence;
     $session->last_calculate_at = now();
+    $session->save();
 
     return $session;
   }
