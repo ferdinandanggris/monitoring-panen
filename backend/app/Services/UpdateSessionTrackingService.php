@@ -60,7 +60,8 @@ class UpdateSessionTrackingService
 
     // 3. Hitung Luas Area Kerja Produktif (Raster Aproksimasi)
     $WORKING_WIDTH = 2.5;
-    $totalArea = TrackingHelper::calculateWorkingArea($totalDistance, $WORKING_WIDTH);
+    $totalArea = TrackingHelper::calculateGeodesicArea($cleanedData);
+    // $totalArea = TrackingHelper::calculateWorkingArea($totalDistance, $WORKING_WIDTH);
 
     // 🆕 LOGGING 4: Total Area
     Log::info('DEBUG AREA: Session ' . $sessionId . ' - Total Area Final = ' . $totalArea . ' m²');
