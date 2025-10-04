@@ -15,7 +15,7 @@ import {
   TinyDefaultMarker,
   TractorEmojiMarker,
 } from "../constants/mapIcons";
-import { getBoundingBoxPolygon } from "../utils/getBoundingBoxPolygon";
+// Hapus import getBoundingBoxPolygon
 
 const ChangeView = ({ center }) => {
   const map = useMap();
@@ -59,12 +59,19 @@ export default function TrackingMap({
           Number(d.latitude),
           Number(d.longitude),
         ]);
-        const lnglatPoints = session.details.map((d) => [
-          Number(d.longitude),
-          Number(d.latitude),
-        ]);
+        
+        // --- LOGIC BARU: MEMBUAT POLYGON ASLI DARI TITIK PELACAKAN ---
+        let fieldPolygon = points;
+        if (points.length >= 3) {
+          const firstPoint = points[0];
+          const lastPoint = points[points.length - 1];
 
-        const bboxPolygon = getBoundingBoxPolygon(lnglatPoints);
+          // Tutup loop poligon jika belum tertutup (titik awal = titik akhir)
+          if (firstPoint[0] !== lastPoint[0] || firstPoint[1] !== lastPoint[1]) {
+            fieldPolygon = [...points, firstPoint];
+          }
+        }
+        // --- AKHIR LOGIC BARU ---
 
         return (
           <div key={session.id}>
@@ -75,10 +82,10 @@ export default function TrackingMap({
               />
             )}
 
-            {/* GRID MODE = Bounding Box */}
-            {viewMode === "grid" && bboxPolygon.length >= 4 && (
+            {/* GRID MODE = Tampilkan Area Sebenarnya (Field Polygon) */}
+            {viewMode === "grid" && fieldPolygon.length >= 4 && ( // Memastikan minimal 3 titik unik + 1 penutup
               <Polygon
-                positions={bboxPolygon}
+                positions={fieldPolygon} // DIGANTI: Menggunakan fieldPolygon
                 pathOptions={{
                   color: "teal",
                   fillOpacity: 0.3,
@@ -87,7 +94,7 @@ export default function TrackingMap({
               />
             )}
 
-            {/* Marker titik awal */}
+            {/* Marker titik akhir (sebelumnya marker titik awal) */}
             {points.length > 0 && (
               <Marker position={points[points.length - 1]} icon={TractorEmojiMarker}>
                 <Popup>

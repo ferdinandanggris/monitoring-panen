@@ -5,6 +5,7 @@ export default function SessionTable({ sessions, onRowClick, onDelete}) {
       <thead className="bg-white/10">
         <tr>
           <th className="p-2 text-left">#</th>
+          <th className="p-2 text-left">Tanggal</th>
           <th className="p-2 text-left">Sopir</th>
           <th className="p-2 text-left">Mesin</th>
           <th className="p-2 text-left">Luas</th>
@@ -22,6 +23,7 @@ export default function SessionTable({ sessions, onRowClick, onDelete}) {
             className="cursor-pointer hover:bg-teal-100 text-black"
           >
             <td className="p-2">{i + 1}</td>
+            <td className="p-2">{session.date || "-"}</td>
             <td className="p-2">{session.driver.name || "-"}</td>
             <td className="p-2">{session.machine.name}</td>
             <td className="p-2">

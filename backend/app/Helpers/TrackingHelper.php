@@ -101,4 +101,80 @@ class TrackingHelper
 
     return self::EARTH_RADIUS * $c;
   }
+
+  /**
+   * Menghitung luas Geodesik dari poligon berdasarkan koordinat Lat/Lng.
+   * Format input: Array dari Associative Array: [['latitude' => lat, 'longitude' => lng], ...]
+   *
+   * @param array $points Array koordinat (Assoc Array)
+   * @return float Luas dalam Meter Persegi (m²). Mengembalikan 0 jika kurang dari 3 titik.
+   */
+  public static function calculateGeodesicArea(array $points): float
+  {
+      // Re-index array untuk memastikan kunci (key) berurutan dari 0
+      $points = array_values($points);
+      
+      $area = 0.0;
+      $earthRadius = self::EARTH_RADIUS; 
+      $n = count($points);
+      
+      // 1. Check jumlah titik. Poligon harus memiliki minimal 3 titik
+      if ($n < 3) { 
+          return 0.0;
+      }
+      
+      // 2. Pastikan poligon tertutup
+      $closedPoints = $points;
+      
+      // Mengakses titik pertama dan terakhir menggunakan key numerik setelah re-index
+      $firstPoint = $points[0]; 
+      $lastPoint = $points[$n - 1];
+
+      // Jika titik awal dan akhir tidak sama, tambahkan titik awal ke akhir
+      // Mengakses nilai Latitude dan Longitude menggunakan key string
+      if (
+          (float)$firstPoint['latitude'] !== (float)$lastPoint['latitude'] || 
+          (float)$firstPoint['longitude'] !== (float)$lastPoint['longitude']
+      ) {
+          $closedPoints[] = $firstPoint;
+          $n = count($closedPoints); 
+      }
+      
+      // 3. Lakukan perhitungan Geodesik (Formula Lambert)
+      for ($i = 0; $i < $n - 1; $i++) {
+          $p1 = $closedPoints[$i]; 
+          $p2 = $closedPoints[$i + 1];
+
+          // Mengambil nilai dari array asosiatif dan mengkonversi ke float (dari string)
+          $lat1 = (float)$p1['latitude'];
+          $lng1 = (float)$p1['longitude'];
+          $lat2 = (float)$p2['latitude'];
+          $lng2 = (float)$p2['longitude'];
+
+          // Konversi derajat ke radian
+          $lat1Rad = deg2rad($lat1);
+          $lng1Rad = deg2rad($lng1);
+          $lat2Rad = deg2rad($lat2);
+          $lng2Rad = deg2rad($lng2);
+
+          // Formula: Σ (lng2 - lng1) * (2 + sin(lat1) + sin(lat2))
+          $area += ($lng2Rad - $lng1Rad) * (2 + sin($lat1Rad) + sin($lat2Rad));
+      }
+
+      // 4. Hitung Luas Akhir: Area * (R^2 / 2)
+      $area = $area * $earthRadius * $earthRadius / 2.0;
+
+      return round(abs($area), 2); // Meter Persegi (m²)
+  }
+
+  /**
+   * Konversi Meter Persegi ke Hektar.
+   *
+   * @param float $squareMeters
+   * @return float Luas dalam Hektar (Ha)
+   */
+  public static function convertSqMetersToHectares(float $squareMeters): float
+  {
+      return round($squareMeters / 10000, 4);
+  }
 }
