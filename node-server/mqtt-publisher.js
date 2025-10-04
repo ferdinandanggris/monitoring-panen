@@ -6,55 +6,56 @@ const DELAY_MS = 1500; // Jeda 1.5 detik antar pengiriman
 
 // Data simulasi pergerakan di sawah (36 titik)
 const simulatedData = [
-  // --- SEGMENT 1: Kerja Produktif (Maju, Speed Tinggi > 5.0 km/h) ---
-  { "machine_id": 1, "latitude": -7.865000, "longitude": 111.466000, "speed": 9.5 },
-  { "machine_id": 1, "latitude": -7.865100, "longitude": 111.466005, "speed": 9.8 },
-  { "machine_id": 1, "latitude": -7.865200, "longitude": 111.466010, "speed": 10.0 },
-  { "machine_id": 1, "latitude": -7.865300, "longitude": 111.466015, "speed": 9.7 },
-  { "machine_id": 1, "latitude": -7.865400, "longitude": 111.466020, "speed": 9.5 },
+  // --- SEGMENT 1: KERJA PRODUKTIF (MAJU LURUS, Speed > 5.0) ---
+  { "machine_id": 1, "latitude": -7.860000, "longitude": 111.470000, "speed": 8.0 },
+  { "machine_id": 1, "latitude": -7.859850, "longitude": 111.470005, "speed": 8.5 },
+  { "machine_id": 1, "latitude": -7.859700, "longitude": 111.470010, "speed": 9.0 },
+  { "machine_id": 1, "latitude": -7.859550, "longitude": 111.470015, "speed": 9.2 },
+  { "machine_id": 1, "latitude": -7.859400, "longitude": 111.470020, "speed": 9.5 },
+  { "machine_id": 1, "latitude": -7.859250, "longitude": 111.470025, "speed": 9.8 },
+  { "machine_id": 1, "latitude": -7.859100, "longitude": 111.470030, "speed": 9.7 },
+  { "machine_id": 1, "latitude": -7.858950, "longitude": 111.470035, "speed": 9.5 },
+  { "machine_id": 1, "latitude": -7.858800, "longitude": 111.470040, "speed": 9.0 },
+  { "machine_id": 1, "latitude": -7.858650, "longitude": 111.470045, "speed": 8.5 }, // P10: Titik Akhir Segmen 1
   
-  // --- SEGMENT 2: Putar Balik Lambat (Speed Rendah < 5.0 km/h - Harusnya difilter) ---
-  { "machine_id": 1, "latitude": -7.865420, "longitude": 111.466025, "speed": 4.5 },
-  { "machine_id": 1, "latitude": -7.865430, "longitude": 111.466030, "speed": 3.0 },
-  { "machine_id": 1, "latitude": -7.865440, "longitude": 111.466035, "speed": 1.5 },
-  { "machine_id": 1, "latitude": -7.865445, "longitude": 111.466040, "speed": 0.5 },
-  { "machine_id": 1, "latitude": -7.865450, "longitude": 111.466045, "speed": 2.0 },
+  // --- SEGMENT 2: PUTAR BALIK (LAMBAT, Speed < 5.0 - HARUS DIHAPUS) ---
+  { "machine_id": 1, "latitude": -7.858600, "longitude": 111.470055, "speed": 4.5 },
+  { "machine_id": 1, "latitude": -7.858550, "longitude": 111.470065, "speed": 3.0 },
+  { "machine_id": 1, "latitude": -7.858500, "longitude": 111.470075, "speed": 1.5 },
+  { "machine_id": 1, "latitude": -7.858550, "longitude": 111.470085, "speed": 2.0 },
+  { "machine_id": 1, "latitude": -7.858600, "longitude": 111.470095, "speed": 4.0 }, // P15: Titik Akhir Putar Balik
   
-  // --- SEGMENT 3: Kerja Produktif (Kembali, Jalur Baru) ---
-  { "machine_id": 1, "latitude": -7.865400, "longitude": 111.466055, "speed": 8.0 },
-  { "machine_id": 1, "latitude": -7.865300, "longitude": 111.466060, "speed": 8.5 },
-  { "machine_id": 1, "latitude": -7.865200, "longitude": 111.466065, "speed": 8.2 },
-  { "machine_id": 1, "latitude": -7.865100, "longitude": 111.466070, "speed": 8.7 },
-  { "machine_id": 1, "latitude": -7.865000, "longitude": 111.466075, "speed": 8.9 },
-
-  // --- SEGMENT 4: Noise/Stuck (Titik Diam & Noise, Speed Rendah < 5.0 km/h - Harusnya difilter) ---
-  { "machine_id": 1, "latitude": -7.865000, "longitude": 111.466075, "speed": 0.0 }, 
-  { "machine_id": 1, "latitude": -7.865000, "longitude": 111.466075, "speed": 0.0 }, 
-  { "machine_id": 1, "latitude": -7.865001, "longitude": 111.466075, "speed": 0.5 }, 
-  { "machine_id": 1, "latitude": -7.865002, "longitude": 111.466076, "speed": 1.0 }, 
-  { "machine_id": 1, "latitude": -7.865003, "longitude": 111.466077, "speed": 1.5 }, 
-
-  // --- SEGMENT 5: Kerja Produktif (Jalur ke-3, Speed Tinggi) ---
-  { "machine_id": 1, "latitude": -7.865050, "longitude": 111.466150, "speed": 9.0 },
-  { "machine_id": 1, "latitude": -7.865150, "longitude": 111.466155, "speed": 9.3 },
-  { "machine_id": 1, "latitude": -7.865250, "longitude": 111.466160, "speed": 9.1 },
-  { "machine_id": 1, "latitude": -7.865350, "longitude": 111.466165, "speed": 9.4 },
-  { "machine_id": 1, "latitude": -7.865450, "longitude": 111.466170, "speed": 9.6 },
-
-  // --- SEGMENT 6: Melipat Area (Speed Tinggi, Uji Luas Poligon) ---
-  { "machine_id": 1, "latitude": -7.865400, "longitude": 111.466130, "speed": 8.0 },
-  { "machine_id": 1, "latitude": -7.865350, "longitude": 111.466100, "speed": 8.5 },
-  { "machine_id": 1, "latitude": -7.865300, "longitude": 111.466070, "speed": 9.0 },
-  { "machine_id": 1, "latitude": -7.865250, "longitude": 111.466040, "speed": 9.5 },
-  { "machine_id": 1, "latitude": -7.865200, "longitude": 111.466010, "speed": 9.8 },
-
-  // --- SEGMENT 7: Titik Akhir (Speed Tinggi) ---
-  { "machine_id": 1, "latitude": -7.865100, "longitude": 111.465950, "speed": 10.0 },
-  { "machine_id": 1, "latitude": -7.865000, "longitude": 111.465900, "speed": 10.0 },
-  { "machine_id": 1, "latitude": -7.864900, "longitude": 111.465850, "speed": 10.0 },
-  { "machine_id": 1, "latitude": -7.864800, "longitude": 111.465800, "speed": 10.0 },
-  { "machine_id": 1, "latitude": -7.864700, "longitude": 111.465750, "speed": 10.0 }
-];
+  // --- SEGMENT 3: KERJA PRODUKTIF (KEMBALI LURUS, Speed > 5.0) ---
+  { "machine_id": 1, "latitude": -7.858800, "longitude": 111.470250, "speed": 8.0 }, // Bergeser ke jalur baru
+  { "machine_id": 1, "latitude": -7.858950, "longitude": 111.470245, "speed": 8.5 },
+  { "machine_id": 1, "latitude": -7.859100, "longitude": 111.470240, "speed": 9.0 },
+  { "machine_id": 1, "latitude": -7.859250, "longitude": 111.470235, "speed": 9.2 },
+  { "machine_id": 1, "latitude": -7.859400, "longitude": 111.470230, "speed": 9.5 },
+  { "machine_id": 1, "latitude": -7.859550, "longitude": 111.470225, "speed": 9.8 },
+  { "machine_id": 1, "latitude": -7.859700, "longitude": 111.470220, "speed": 9.7 },
+  { "machine_id": 1, "latitude": -7.859850, "longitude": 111.470215, "speed": 9.5 },
+  { "machine_id": 1, "latitude": -7.860000, "longitude": 111.470210, "speed": 9.0 },
+  { "machine_id": 1, "latitude": -7.860150, "longitude": 111.470205, "speed": 8.5 }, // P25: Titik Akhir Segmen 3
+  
+  // --- SEGMENT 4: PUTAR BALIK (LAMBAT, Speed < 5.0 - HARUS DIHAPUS) ---
+  { "machine_id": 1, "latitude": -7.860200, "longitude": 111.470195, "speed": 4.5 },
+  { "machine_id": 1, "latitude": -7.860250, "longitude": 111.470185, "speed": 3.0 },
+  { "machine_id": 1, "latitude": -7.860300, "longitude": 111.470175, "speed": 1.5 },
+  { "machine_id": 1, "latitude": -7.860250, "longitude": 111.470165, "speed": 2.0 },
+  { "machine_id": 1, "latitude": -7.860200, "longitude": 111.470155, "speed": 4.0 }, // P30: Titik Akhir Putar Balik
+  
+  // --- SEGMENT 5: KERJA PRODUKTIF (MAJU LURUS, Jalur Terakhir) ---
+  { "machine_id": 1, "latitude": -7.860000, "longitude": 111.470350, "speed": 8.0 }, // Bergeser ke jalur terakhir
+  { "machine_id": 1, "latitude": -7.859800, "longitude": 111.470355, "speed": 8.5 },
+  { "machine_id": 1, "latitude": -7.859600, "longitude": 111.470360, "speed": 9.0 },
+  { "machine_id": 1, "latitude": -7.859400, "longitude": 111.470365, "speed": 9.2 },
+  { "machine_id": 1, "latitude": -7.859200, "longitude": 111.470370, "speed": 9.5 },
+  { "machine_id": 1, "latitude": -7.859000, "longitude": 111.470375, "speed": 9.8 },
+  { "machine_id": 1, "latitude": -7.858800, "longitude": 111.470380, "speed": 9.7 },
+  { "machine_id": 1, "latitude": -7.858600, "longitude": 111.470385, "speed": 9.5 },
+  { "machine_id": 1, "latitude": -7.858400, "longitude": 111.470390, "speed": 9.0 },
+  { "machine_id": 1, "latitude": -7.858200, "longitude": 111.470395, "speed": 8.5 } // P40: Titik Akhir
+]
 
 
 client.on("connect", () => {

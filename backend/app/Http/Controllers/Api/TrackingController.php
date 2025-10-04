@@ -110,7 +110,7 @@ class TrackingController extends Controller
                 $resultUpdate = $session;
             }
             $resultUpdate->details = TrackingHelper::cleanTrackingData($session->details->toArray());
-            $resultUpdate->total_harga = $resultUpdate->total_distance * $settings->value; // 1m² = 1000 IDR
+            $resultUpdate->total_harga = $resultUpdate->total_area * $settings->value; // 1m² = 1000 IDR
             return $resultUpdate;
         });
 
