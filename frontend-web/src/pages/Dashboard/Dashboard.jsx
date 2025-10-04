@@ -15,8 +15,8 @@ export default function Dashboard() {
   const [sessions, setSessions] = useState([]);
   const [summary, setSummary] = useState({}); // 🆕
   const [selectedCoordinate, setSelectedCoordinate] = useState(null); // 🆕
-  const [startDate, setStartDate] = useState(format(new Date(), 'yyyy-MM-dd'));
-  const [endDate, setEndDate] = useState(format((new Date()).setMonth((new Date()).getMonth() - 1), 'yyyy-MM-dd'));
+  const [startDate, setStartDate] = useState(format((new Date()).setMonth((new Date()).getMonth() - 1), 'yyyy-MM-dd'));
+  const [endDate, setEndDate] = useState(format(new Date(), 'yyyy-MM-dd'));
 
   const handleRowClick = (lat, lng) => {
     setSelectedCoordinate([parseFloat(lat), parseFloat(lng)]);
